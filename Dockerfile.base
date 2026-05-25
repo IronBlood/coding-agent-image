@@ -1,8 +1,7 @@
 FROM node:24-trixie-slim
 
 # The user-facing image reuses host UID/GID values, commonly 1000:1000.
-RUN userdel --remove node \
-  && groupdel node
+RUN userdel --remove node
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get install -y --no-install-recommends \
