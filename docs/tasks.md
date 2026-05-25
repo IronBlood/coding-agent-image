@@ -13,7 +13,7 @@
 
 ### Shared Base Image
 
-- [x] Use `debian:bookworm-slim` as the base image for the shared Claude image.
+- [x] Initially use `debian:bookworm-slim` as the base image for the shared Claude image (superseded by the multi-agent base-image switch below).
 - [x] Install the Debian runtime utilities required by version 1: `bash`, `git`, `sed`, `awk`, and `ripgrep`.
 - [x] Install Claude Code with the official setup method during image build.
 - [x] Make the installed `claude` binary available on a global `PATH` instead of leaving it only under `$HOME/.local/bin`.
@@ -29,7 +29,7 @@
 - [x] Create a real in-container user from `USERNAME`, `UID`, and `GID`.
 - [x] Create the matching home directory for the configured in-container user.
 - [x] Link `claude` under `${HOME}/.local/bin` and add that path to `PATH`.
-- [x] Set the final user-facing image default behavior to start Claude Code as the created user instead of opening a shell.
+- [x] Initially set the user-facing image to start Claude Code as the created user by default (superseded by explicit agent invocation below).
 - [x] Build the user-facing image with host-matching `USERNAME`, `UID`, and `GID` values so files created in bind-mounted directories remain owned by the host user.
 - [x] Write `README.md` as the end-user manual for building and running the shared base image and the user-facing image.
 
@@ -39,8 +39,8 @@
 - [x] Install Pi globally with npm using the non-interactive command provided by its official installer.
 - [x] Verify the Pi npm installation during image build and that `pi` is available on a global `PATH`.
 - [x] Confirm that Pi does not require any additional launcher relocation, wrapper behavior, or runtime packages in the shared base image.
-- [?] Remove the inherited `node` user and group from the shared base image so the user-facing image can reuse a host UID/GID such as `1000:1000`.
-- [+] Update the user-facing image so it no longer starts `claude` by default and instead allows the user to invoke an installed agent such as `claude` or `pi`.
-- [+] Document Pi configuration persistence through its default `~/.pi/agent` directory and any supported runtime overrides.
-- [+] Rename the broader multi-agent image targets to `coding-agent-image-base` and `coding-agent-image` across implementation and user documentation.
-- [+] Update the CI workflow and `README.md` after the multi-agent Dockerfile behavior is validated.
+- [x] Remove the inherited `node` user and group from the shared base image so the user-facing image can reuse a host UID/GID such as `1000:1000`.
+- [x] Update the user-facing image so it no longer starts `claude` by default and instead allows the user to invoke an installed agent such as `claude` or `pi`.
+- [x] Document Pi configuration persistence through its default `~/.pi/agent` directory and any supported runtime overrides.
+- [x] Rename the broader multi-agent image targets to `coding-agent-image-base` and `coding-agent-image` across implementation and user documentation.
+- [x] Update the CI workflow and `README.md` after the multi-agent Dockerfile behavior is validated.

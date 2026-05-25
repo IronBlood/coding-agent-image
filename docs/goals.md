@@ -18,7 +18,7 @@ Pi requires Node.js `22.19.0` or newer and npm. Because the selected base image 
 npm install -g --ignore-scripts --no-fund --no-audit --loglevel=error --progress=false @earendil-works/pi-coding-agent
 ```
 
-The Claude Code installer has been confirmed to run in a non-interactive image build environment. The Pi npm installation and resulting global `pi` executable still need to be validated in the same build environment.
+The Claude Code installer and Pi npm installation have been confirmed to run in a non-interactive image build environment, with both resulting executables available to the user-facing image.
 
 If the Claude Code setup path does not work reliably in the image build, an acceptable fallback is to install Claude Code with npm instead, since the selected base image already provides Node.js and npm.
 
