@@ -6,23 +6,23 @@ The first supported agent was Claude Code. The next iteration expands the shared
 
 These utilities are part of the runtime contract and should be installed explicitly rather than assumed to be present in the base image.
 
-The preferred implementation is to use `debian:bookworm-slim` as the base image and install each supported agent with its official setup method. Claude Code is installed with:
+The preferred implementation is to use `node:24-trixie-slim` as the shared base image. This keeps a Debian-based image while providing the Node.js and npm runtime required by Pi. Claude Code is installed with its official setup method:
 
 ```bash
 curl -fsSL https://claude.ai/install.sh | bash
 ```
 
-Pi is intended to be installed with:
+Pi requires Node.js `22.19.0` or newer and npm. Because the selected base image already provides Node.js 24 and npm, Pi is installed directly through the non-interactive npm command used by its official installer:
 
 ```bash
-curl -fsSL https://pi.dev/install.sh | sh
+npm install -g --ignore-scripts --no-fund --no-audit --loglevel=error --progress=false @earendil-works/pi-coding-agent
 ```
 
-The Claude Code installer has been confirmed to run in a non-interactive image build environment. The Pi installer still needs to be validated in the same build environment.
+The Claude Code installer has been confirmed to run in a non-interactive image build environment. The Pi npm installation and resulting global `pi` executable still need to be validated in the same build environment.
 
-If the Claude Code setup path does not work reliably in the image build, an acceptable fallback is to install Claude Code with npm instead. In that fallback case, it is acceptable to switch the base image from `debian:bookworm-slim` to a Node-based image in order to simplify the Node.js/npm setup.
+If the Claude Code setup path does not work reliably in the image build, an acceptable fallback is to install Claude Code with npm instead, since the selected base image already provides Node.js and npm.
 
-Because the official installer places the `claude` binary under `$HOME/.local/bin` by default, the image shall make `claude` available on a global `PATH` for the runtime user instead of relying only on the build-time home directory layout. For version 1, the shared base image may satisfy this by resolving the real installed binary, copying it into a global location such as `/opt/claude-code/bin/claude`, and exposing `claude` through a stable wrapper on `/usr/local/bin`.
+Because the official installer places the `claude` binary under `$HOME/.local/bin` by default, the image shall make `claude` available on a global `PATH` for the runtime user instead of relying only on the build-time home directory layout. For version 1, the shared base image may satisfy this by resolving the real installed binary, copying it into a global location such as `/opt/claude-code/bin/claude`, and exposing `claude` through a stable wrapper on `/usr/local/bin`. Pi should remain installed through npm's global prefix so that its Node.js runtime and package layout remain intact.
 
 This project is delivered as two images represented by two Dockerfiles. One shared base image contains supported agent installations, global `PATH` exposure, runtime utilities, installation verification, and agent-specific shared launcher behavior such as disabling Claude auto-updates. A second user-facing image builds on top of that base image and contains the runtime configuration that mirrors the target host user.
 

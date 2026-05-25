@@ -30,3 +30,4 @@
 [20260420 11:24:00] Drafted README.md as the end-user manual and marked the final remaining task complete.
 [20260420 11:42:00] Refined README.md into the final user manual structure: motivation, two-image overview, staged runtime examples, notes, and troubleshooting.
 [20260525 20:44:17] Expanded goals and initial implementation toward a multi-agent image with Claude Code and Pi; CI validation and README updates remain pending.
+[20260525 22:10:58] Switched the multi-agent base design to node:24-trixie-slim and changed Pi installation to its global non-interactive npm command; CI validation remains pending.
