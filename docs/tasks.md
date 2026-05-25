@@ -35,10 +35,10 @@
 
 ### Multi-Agent Expansion
 
-- [ ] Install Pi in the shared base image with its official setup method.
-- [ ] Verify the Pi installer works non-interactively during image build and that `pi` is available on a global `PATH`.
+- [+] Install Pi in the shared base image with its official setup method.
+- [?] Verify the Pi installer works non-interactively during image build and that `pi` is available on a global `PATH`.
 - [ ] Confirm whether Pi requires any launcher relocation, wrapper behavior, or additional runtime packages in the shared base image.
-- [ ] Update the user-facing image so it no longer starts `claude` by default and instead allows the user to invoke an installed agent such as `claude` or `pi`.
-- [ ] Document Pi configuration persistence through its default `~/.pi/agent` directory and any supported runtime overrides.
-- [ ] Rename the broader multi-agent image targets to `coding-agent-image-base` and `coding-agent-image` across implementation and user documentation.
-- [ ] Update the CI workflow and `README.md` after the multi-agent Dockerfile behavior is validated.
+- [+] Update the user-facing image so it no longer starts `claude` by default and instead allows the user to invoke an installed agent such as `claude` or `pi`.
+- [+] Document Pi configuration persistence through its default `~/.pi/agent` directory and any supported runtime overrides.
+- [+] Rename the broader multi-agent image targets to `coding-agent-image-base` and `coding-agent-image` across implementation and user documentation.
+- [+] Update the CI workflow and `README.md` after the multi-agent Dockerfile behavior is validated.

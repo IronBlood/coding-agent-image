@@ -24,3 +24,12 @@ RUN mkdir -p /opt/claude-code/bin \
 
 RUN which claude \
   && claude --version
+
+RUN curl -fsSL https://pi.dev/install.sh | sh
+
+RUN mkdir -p /opt/pi/bin \
+  && install -m 0755 "$(readlink -f /root/.local/bin/pi)" /opt/pi/bin/pi \
+  && ln -s /opt/pi/bin/pi /usr/local/bin/pi
+
+RUN which pi \
+  && pi --version

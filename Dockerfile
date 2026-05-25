@@ -22,5 +22,3 @@ RUN groupadd --gid "${GID}" "${USERNAME}" \
   && chown -R "${UID}:${GID}" "${HOME}"
 
 USER ${USERNAME}
-
-CMD ["claude"]

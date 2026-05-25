@@ -15,7 +15,7 @@ jobs:
       USERNAME: claude
       UID: 1000
       GID: 1000
-      RUNTIME_IMAGE: claude-code-image:ci
+      RUNTIME_IMAGE: coding-agent-image:ci
 
     steps:
       - name: Check out repository
@@ -24,7 +24,7 @@ jobs:
       - name: Derive image names
         run: |
           owner="${GITHUB_REPOSITORY_OWNER,,}"
-          echo "BASE_IMAGE=ghcr.io/${owner}/claude-code-image-base" >> "$GITHUB_ENV"
+          echo "BASE_IMAGE=ghcr.io/${owner}/coding-agent-image-base" >> "$GITHUB_ENV"
 
       - name: Log in to GHCR
         uses: docker/login-action@v4
@@ -39,10 +39,12 @@ jobs:
       - name: Push shared base image
         run: docker push "$BASE_IMAGE"
 
-      - name: Check Claude as root in shared base image
+      - name: Check agents in shared base image
         run: |
           docker run --rm "$BASE_IMAGE" which claude
           docker run --rm "$BASE_IMAGE" claude --version
+          docker run --rm "$BASE_IMAGE" which pi
+          docker run --rm "$BASE_IMAGE" pi --version
 
       - name: Build user-facing image
         run: |
@@ -53,7 +55,9 @@ jobs:
             --build-arg GID="$GID" \
             -t "$RUNTIME_IMAGE" .
 
-      - name: Check Claude as configured non-root user
+      - name: Check agents as configured non-root user
         run: |
           docker run --rm "$RUNTIME_IMAGE" which claude
           docker run --rm "$RUNTIME_IMAGE" claude --version
+          docker run --rm "$RUNTIME_IMAGE" which pi
+          docker run --rm "$RUNTIME_IMAGE" pi --version

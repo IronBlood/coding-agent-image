@@ -20,7 +20,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 
 The Claude Code installer has been confirmed to run in a non-interactive image build environment. The Pi installer still needs to be validated in the same build environment.
 
-If that setup path does not work reliably in the image build, an acceptable fallback is to install Claude Code with npm instead. In that fallback case, it is acceptable to switch the base image from `debian:bookworm-slim` to a Node-based image in order to simplify the Node.js/npm setup.
+If the Claude Code setup path does not work reliably in the image build, an acceptable fallback is to install Claude Code with npm instead. In that fallback case, it is acceptable to switch the base image from `debian:bookworm-slim` to a Node-based image in order to simplify the Node.js/npm setup.
 
 Because the official installer places the `claude` binary under `$HOME/.local/bin` by default, the image shall make `claude` available on a global `PATH` for the runtime user instead of relying only on the build-time home directory layout. For version 1, the shared base image may satisfy this by resolving the real installed binary, copying it into a global location such as `/opt/claude-code/bin/claude`, and exposing `claude` through a stable wrapper on `/usr/local/bin`.
 
@@ -40,7 +40,7 @@ The user-facing image should create a real in-container user account and a match
 
 Agent configuration paths inside the container should follow that created user's home directory. For Claude Code, both `~/.claude` and `~/.claude.json` shall be made available at their expected locations under that home path. For Pi, `~/.pi` shall be mountable under the same home path; Pi currently stores its default global configuration under `~/.pi/agent` and also supports overriding that directory with `PI_CODING_AGENT_DIR`.
 
-In this project, “isolated environment” means Claude Code should only be able to access files that are intentionally exposed to the container through bind mounts. The purpose is to reduce the impact of malicious or unsafe commands by limiting the visible filesystem scope to the specific project directory and required Claude configuration paths, rather than exposing broad host locations such as the full home directory or the host root filesystem.
+In this project, “isolated environment” means coding agents should only be able to access files that are intentionally exposed to the container through bind mounts. The purpose is to reduce the impact of malicious or unsafe commands by limiting the visible filesystem scope to the specific project directory and required agent configuration paths, rather than exposing broad host locations such as the full home directory or the host root filesystem.
 
 The required host paths and environment variables depend on the selected agent and backend. Claude Code workflows may use `~/.claude`, `~/.claude.json`, `ANTHROPIC_BASE_URL`, and `ANTHROPIC_AUTH_TOKEN`. Pi workflows may mount `~/.pi` to persist its `~/.pi/agent` configuration and sessions, together with any provider credentials required by the selected Pi provider.
 
