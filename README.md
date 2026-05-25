@@ -1,6 +1,6 @@
-# Claude Code Image
+# Coding Agent Image
 
-This repository provides a two-image setup for running Claude Code in a container while keeping file ownership aligned with the host user.
+This repository provides a two-image setup for running agnet (e.g. Claude Code) in a container while keeping file ownership aligned with the host user.
 
 ## Why use this?
 
