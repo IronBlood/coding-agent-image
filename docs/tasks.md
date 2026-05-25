@@ -35,10 +35,11 @@
 
 ### Multi-Agent Expansion
 
-- [+] Switch the shared base image to `node:24-trixie-slim` to provide Pi's Node.js and npm runtime.
-- [+] Install Pi globally with npm using the non-interactive command provided by its official installer.
-- [?] Verify the Pi npm installation during image build and that `pi` is available on a global `PATH`.
-- [ ] Confirm that Pi does not require any additional launcher relocation, wrapper behavior, or runtime packages in the shared base image.
+- [x] Switch the shared base image to `node:24-trixie-slim` to provide Pi's Node.js and npm runtime.
+- [x] Install Pi globally with npm using the non-interactive command provided by its official installer.
+- [x] Verify the Pi npm installation during image build and that `pi` is available on a global `PATH`.
+- [x] Confirm that Pi does not require any additional launcher relocation, wrapper behavior, or runtime packages in the shared base image.
+- [?] Remove the inherited `node` user and group from the shared base image so the user-facing image can reuse a host UID/GID such as `1000:1000`.
 - [+] Update the user-facing image so it no longer starts `claude` by default and instead allows the user to invoke an installed agent such as `claude` or `pi`.
 - [+] Document Pi configuration persistence through its default `~/.pi/agent` directory and any supported runtime overrides.
 - [+] Rename the broader multi-agent image targets to `coding-agent-image-base` and `coding-agent-image` across implementation and user documentation.

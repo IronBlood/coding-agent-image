@@ -31,3 +31,5 @@
 [20260420 11:42:00] Refined README.md into the final user manual structure: motivation, two-image overview, staged runtime examples, notes, and troubleshooting.
 [20260525 20:44:17] Expanded goals and initial implementation toward a multi-agent image with Claude Code and Pi; CI validation and README updates remain pending.
 [20260525 22:10:58] Switched the multi-agent base design to node:24-trixie-slim and changed Pi installation to its global non-interactive npm command; CI validation remains pending.
+[20260525 22:34:00] Confirmed the Node-based shared image installs and exposes Pi in CI; added a valid default shared image for the user-facing Dockerfile.
+[20260525 22:48:00] Removed the inherited node user/group in the shared base image draft to free UID/GID 1000:1000 for the host-mirroring user-facing build; CI validation remains pending.
