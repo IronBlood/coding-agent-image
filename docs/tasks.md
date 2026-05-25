@@ -44,3 +44,14 @@
 - [x] Document Pi configuration persistence through its default `~/.pi/agent` directory and any supported runtime overrides.
 - [x] Rename the broader multi-agent image targets to `coding-agent-image-base` and `coding-agent-image` across implementation and user documentation.
 - [x] Update the CI workflow and `README.md` after the multi-agent Dockerfile behavior is validated.
+
+### Additional Npm Agents
+
+- [ ] Install Codex CLI globally with the official npm package `@openai/codex`.
+- [ ] Install GitHub Copilot CLI globally with the official npm package `@github/copilot`, without suppressing its installation scripts.
+- [ ] Install Gemini CLI globally with the official npm package `@google/gemini-cli`.
+- [ ] Verify that `codex`, `copilot`, and `gemini` are available on a global `PATH` and can report their versions during the shared base-image build.
+- [ ] Confirm that the three new CLIs remain executable from the non-root user-facing image.
+- [ ] Decide how update checks or automatic updates for the newly installed CLIs should be handled in a centrally built shared base image.
+- [ ] Document the runtime configuration mounts for `~/.codex`, `~/.copilot`, and `~/.gemini` in `README.md`.
+- [ ] Update the CI workflow to verify the new agents after the shared base and user-facing images are built.
