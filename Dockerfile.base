@@ -37,3 +37,19 @@ RUN npm install -g \
     @earendil-works/pi-coding-agent \
   && command -v pi \
   && pi --version
+
+# Keep install scripts enabled: GitHub Copilot CLI requires them for its npm installation.
+RUN npm install -g \
+    --no-fund \
+    --no-audit \
+    --loglevel=error \
+    --progress=false \
+    @openai/codex \
+    @github/copilot \
+    @google/gemini-cli \
+  && command -v codex \
+  && codex --version \
+  && command -v copilot \
+  && copilot --version \
+  && command -v gemini \
+  && gemini --version

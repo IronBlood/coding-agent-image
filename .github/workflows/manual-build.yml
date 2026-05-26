@@ -45,6 +45,12 @@ jobs:
           docker run --rm "$BASE_IMAGE" claude --version
           docker run --rm "$BASE_IMAGE" which pi
           docker run --rm "$BASE_IMAGE" pi --version
+          docker run --rm "$BASE_IMAGE" which codex
+          docker run --rm "$BASE_IMAGE" codex --version
+          docker run --rm "$BASE_IMAGE" which copilot
+          docker run --rm "$BASE_IMAGE" copilot --version
+          docker run --rm "$BASE_IMAGE" which gemini
+          docker run --rm "$BASE_IMAGE" gemini --version
 
       - name: Build user-facing image
         run: |
@@ -61,3 +67,9 @@ jobs:
           docker run --rm "$RUNTIME_IMAGE" claude --version
           docker run --rm "$RUNTIME_IMAGE" which pi
           docker run --rm "$RUNTIME_IMAGE" pi --version
+          docker run --rm "$RUNTIME_IMAGE" which codex
+          docker run --rm "$RUNTIME_IMAGE" codex --version
+          docker run --rm "$RUNTIME_IMAGE" which copilot
+          docker run --rm "$RUNTIME_IMAGE" copilot --version
+          docker run --rm "$RUNTIME_IMAGE" which gemini
+          docker run --rm "$RUNTIME_IMAGE" gemini --version
