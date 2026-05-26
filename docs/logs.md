@@ -35,3 +35,5 @@
 [20260525 22:48:00] Removed the inherited node user/group in the shared base image draft to free UID/GID 1000:1000 for the host-mirroring user-facing build; CI validation remains pending.
 [20260525 23:15:00] Confirmed the full multi-agent workflow passes in CI, including the user-facing image; updated documentation for Claude Code and Pi usage.
 [20260525 23:44:00] Added Codex, Copilot, and Gemini npm installations plus shared and non-root CI checks; validation remains pending.
+[20260526 00:00:00] Documented Codex, Copilot, and Gemini runtime mounts and invocation examples after a successful local user-facing image build.
+[20260526 00:00:00] Updated the Codex runtime example to disable its nested bubblewrap sandbox when Docker supplies the isolation boundary.

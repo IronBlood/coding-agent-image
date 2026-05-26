@@ -1,6 +1,6 @@
 # Coding Agent Image
 
-This repository provides a two-image setup for running terminal coding agents, initially Claude Code and Pi, in a container while keeping file ownership aligned with the host user.
+This repository provides a two-image setup for running terminal coding agents, including Claude Code, Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI, in a container while keeping file ownership aligned with the host user.
 
 ## Why use this?
 
@@ -14,12 +14,12 @@ Docker alone is not enough, because the default `root` runtime often causes file
 
 The shared base image is built from [Dockerfile.base](./Dockerfile.base). It:
 
-- uses `node:24-trixie-slim`, providing the Node.js runtime needed by Pi
+- uses `node:24-trixie-slim`, providing the Node.js runtime needed by npm-installed agents
 - installs `bash`, `git`, `sed`, `awk`, `ripgrep`, `ca-certificates`, and `curl`
 - installs Claude Code with the official installer
-- installs Pi globally through npm
+- installs Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI globally through npm
 - copies the real Claude binary into a global location
-- exposes `claude` and `pi` on `PATH`
+- exposes `claude`, `pi`, `codex`, `copilot`, and `gemini` on `PATH`
 - disables Claude auto-updates through a wrapper
 
 This image is intended to be built in CI and published to GHCR.
@@ -145,9 +145,56 @@ docker run --rm -it \
   coding-agent-image:local pi
 ```
 
+## Run Codex CLI
+
+Codex stores its user configuration, authentication, and session state under `~/.codex`. Mount that directory to preserve state between container runs.
+
+On Linux, Codex normally uses its own `bubblewrap`-based sandbox. In an ordinary Docker container, that nested sandbox may not have the required capabilities. When Docker is the intended isolation boundary, the [Codex container guidance](https://developers.openai.com/codex/agent-approvals-security#run-codex-in-dev-containers) recommends running Codex with `--sandbox danger-full-access` inside the container.
+
+```bash
+export WORKING_DIR=/path/to/working/dir
+export USERNAME=$(id -un)
+
+docker run --rm -it \
+  -w $WORKING_DIR \
+  -v $WORKING_DIR:$WORKING_DIR \
+  -v /path/to/.codex:/home/$USERNAME/.codex \
+  coding-agent-image:local codex --sandbox danger-full-access
+```
+
+## Run GitHub Copilot CLI
+
+GitHub Copilot CLI stores user settings, credentials, permissions, and sessions under `~/.copilot`. Mount that directory to preserve state between container runs.
+
+```bash
+export WORKING_DIR=/path/to/working/dir
+export USERNAME=$(id -un)
+
+docker run --rm -it \
+  -w $WORKING_DIR \
+  -v $WORKING_DIR:$WORKING_DIR \
+  -v /path/to/.copilot:/home/$USERNAME/.copilot \
+  coding-agent-image:local copilot
+```
+
+## Run Gemini CLI
+
+Gemini CLI stores user settings and user-level state under `~/.gemini`. Mount that directory to preserve state between container runs.
+
+```bash
+export WORKING_DIR=/path/to/working/dir
+export USERNAME=$(id -un)
+
+docker run --rm -it \
+  -w $WORKING_DIR \
+  -v $WORKING_DIR:$WORKING_DIR \
+  -v /path/to/.gemini:/home/$USERNAME/.gemini \
+  coding-agent-image:local gemini
+```
+
 ## Notes
 
-- **Persistent config**: mount each agent's state into the created user's home directory, such as `~/.claude` and `~/.claude.json` for Claude Code or `~/.pi` for Pi.
+- **Persistent config**: mount only the state needed by the agent you run: `~/.claude` and `~/.claude.json` for Claude Code, `~/.pi` for Pi, `~/.codex` for Codex, `~/.copilot` for Copilot, or `~/.gemini` for Gemini.
 - **Working directory**: mount the workspace at the same absolute path inside the container as it uses on the host. This keeps path references consistent between the host and the container.
 - **Updates**: Claude auto-updates are disabled in the shared base image. To update installed agents, pull or rebuild the shared base image and then rebuild the user-facing image.
 
