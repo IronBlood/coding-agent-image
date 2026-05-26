@@ -88,6 +88,9 @@ export WORKING_DIR=/path/to/working/dir
 export USERNAME=$(id -un)
 
 docker run --rm -it \
+  -e TERM \
+  -e COLORTERM \
+  -e TERM_PROGRAM \
   -w $WORKING_DIR \
   -v $WORKING_DIR:$WORKING_DIR \
   -v /path/to/.claude:/home/$USERNAME/.claude \
@@ -102,6 +105,9 @@ export WORKING_DIR=/path/to/working/dir
 export USERNAME=$(id -un)
 
 docker run --rm -it \
+  -e TERM \
+  -e COLORTERM \
+  -e TERM_PROGRAM \
   -w $WORKING_DIR \
   -v $WORKING_DIR:$WORKING_DIR \
   -v /path/to/.claude:/home/$USERNAME/.claude \
@@ -121,6 +127,9 @@ export USERNAME=$(id -un)
 
 docker run --rm -it \
   --add-host=host.docker.internal:host-gateway \
+  -e TERM \
+  -e COLORTERM \
+  -e TERM_PROGRAM \
   -w $WORKING_DIR \
   -v $WORKING_DIR:$WORKING_DIR \
   -v /path/to/.claude:/home/$USERNAME/.claude \
@@ -139,6 +148,9 @@ export WORKING_DIR=/path/to/working/dir
 export USERNAME=$(id -un)
 
 docker run --rm -it \
+  -e TERM \
+  -e COLORTERM \
+  -e TERM_PROGRAM \
   -w $WORKING_DIR \
   -v $WORKING_DIR:$WORKING_DIR \
   -v /path/to/.pi:/home/$USERNAME/.pi \
@@ -156,6 +168,9 @@ export WORKING_DIR=/path/to/working/dir
 export USERNAME=$(id -un)
 
 docker run --rm -it \
+  -e TERM \
+  -e COLORTERM \
+  -e TERM_PROGRAM \
   -w $WORKING_DIR \
   -v $WORKING_DIR:$WORKING_DIR \
   -v /path/to/.codex:/home/$USERNAME/.codex \
@@ -171,6 +186,9 @@ export WORKING_DIR=/path/to/working/dir
 export USERNAME=$(id -un)
 
 docker run --rm -it \
+  -e TERM \
+  -e COLORTERM \
+  -e TERM_PROGRAM \
   -w $WORKING_DIR \
   -v $WORKING_DIR:$WORKING_DIR \
   -v /path/to/.copilot:/home/$USERNAME/.copilot \
@@ -186,6 +204,9 @@ export WORKING_DIR=/path/to/working/dir
 export USERNAME=$(id -un)
 
 docker run --rm -it \
+  -e TERM \
+  -e COLORTERM \
+  -e TERM_PROGRAM \
   -w $WORKING_DIR \
   -v $WORKING_DIR:$WORKING_DIR \
   -v /path/to/.gemini:/home/$USERNAME/.gemini \
@@ -195,6 +216,7 @@ docker run --rm -it \
 ## Notes
 
 - **Persistent config**: mount only the state needed by the agent you run: `~/.claude` and `~/.claude.json` for Claude Code, `~/.pi` for Pi, `~/.codex` for Codex, `~/.copilot` for Copilot, or `~/.gemini` for Gemini.
+- **Terminal styling**: forward `TERM`, `COLORTERM`, and `TERM_PROGRAM` so interactive agents can use the terminal capabilities and color support detected on the host.
 - **Working directory**: mount the workspace at the same absolute path inside the container as it uses on the host. This keeps path references consistent between the host and the container.
 - **Updates**: Claude auto-updates are disabled in the shared base image. To update installed agents, pull or rebuild the shared base image and then rebuild the user-facing image.
 
