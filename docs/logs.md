@@ -37,3 +37,4 @@
 [20260525 23:44:00] Added Codex, Copilot, and Gemini npm installations plus shared and non-root CI checks; validation remains pending.
 [20260526 00:00:00] Documented Codex, Copilot, and Gemini runtime mounts and invocation examples after a successful local user-facing image build.
 [20260526 00:00:00] Updated the Codex runtime example to disable its nested bubblewrap sandbox when Docker supplies the isolation boundary.
+[20260526 00:00:00] Documented forwarding terminal capability environment variables after confirming Codex terminal styling works without additional terminfo packages.
