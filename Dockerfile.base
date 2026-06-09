@@ -10,8 +10,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     sed \
     gawk \
     ripgrep \
+    fd-find \
     ca-certificates \
     curl \
+  && ln -s /usr/bin/fdfind /usr/local/bin/fd \
   && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://claude.ai/install.sh | bash

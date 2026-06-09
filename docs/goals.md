@@ -2,9 +2,9 @@
 
 This project builds a docker image to run terminal coding agents in an isolated environment with the same user id and group id of the current user from the host system, so that ownership of newly created files and folders still belongs to the current user.
 
-The first supported agent was Claude Code. The shared base image has been expanded to support Pi, and the next iteration should add Codex CLI, GitHub Copilot CLI, and Gemini CLI. OpenCode is intentionally out of scope until there is a concrete use case for it. The image should stay minimal and only include agents and utilities needed for supported workflows. At minimum, it shall contain the Claude Code CLI, Pi CLI, Codex CLI, GitHub Copilot CLI, Gemini CLI, and explicitly install the runtime utilities `bash`, `git`, `sed`, `awk`, and `ripgrep` from the Debian package repository.
+The first supported agent was Claude Code. The shared base image has been expanded to support Pi, and the next iteration should add Codex CLI, GitHub Copilot CLI, and Gemini CLI. OpenCode is intentionally out of scope until there is a concrete use case for it. The image should stay minimal and only include agents and utilities needed for supported workflows. At minimum, it shall contain the Claude Code CLI, Pi CLI, Codex CLI, GitHub Copilot CLI, Gemini CLI, and explicitly install the runtime utilities `bash`, `git`, `sed`, `awk`, `ripgrep`, and `fd` from the Debian package repository.
 
-These utilities are part of the runtime contract and should be installed explicitly rather than assumed to be present in the base image.
+These utilities are part of the runtime contract and should be installed explicitly rather than assumed to be present in the base image. Debian packages `fd` as `fd-find` and exposes the binary as `fdfind`, so the image should provide a compatibility symlink at `/usr/local/bin/fd` for agents that invoke `fd` directly.
 
 The preferred implementation is to use `node:24-trixie-slim` as the shared base image. This keeps a Debian-based image while providing the Node.js and npm runtime required by Pi. Claude Code is installed with its official setup method:
 

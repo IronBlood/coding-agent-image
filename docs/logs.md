@@ -41,3 +41,4 @@
 [20260609 21:44:00] Updated manual-build workflow to publish latest and timestamped GHCR tags, summarize agent versions, and create a release for each base image build.
 [20260609 21:46:00] Removed the unused BASE_IMAGE workflow environment variable after splitting explicit latest and timestamped image references.
 [20260609 22:05:00] Captured agent versions from both stdout and stderr and normalized release-note versions to one line.
+[20260609 22:18:00] Added Debian fd-find to the shared base image and exposed it as fd for Pi runtime use.
