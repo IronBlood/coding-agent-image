@@ -40,3 +40,4 @@
 [20260526 00:00:00] Documented forwarding terminal capability environment variables after confirming Codex terminal styling works without additional terminfo packages.
 [20260609 21:44:00] Updated manual-build workflow to publish latest and timestamped GHCR tags, summarize agent versions, and create a release for each base image build.
 [20260609 21:46:00] Removed the unused BASE_IMAGE workflow environment variable after splitting explicit latest and timestamped image references.
+[20260609 22:05:00] Captured agent versions from both stdout and stderr and normalized release-note versions to one line.

@@ -65,11 +65,16 @@ jobs:
 
       - name: Generate release notes
         run: |
-          claude_version="$(docker run --rm "$BASE_IMAGE_VERSIONED" claude --version)"
-          pi_version="$(docker run --rm "$BASE_IMAGE_VERSIONED" pi --version)"
-          codex_version="$(docker run --rm "$BASE_IMAGE_VERSIONED" codex --version)"
-          copilot_version="$(docker run --rm "$BASE_IMAGE_VERSIONED" copilot --version)"
-          gemini_version="$(docker run --rm "$BASE_IMAGE_VERSIONED" gemini --version)"
+          version_of() {
+            docker run --rm "$BASE_IMAGE_VERSIONED" "$@" --version 2>&1 \
+              | sed -n '1p'
+          }
+
+          claude_version="$(version_of claude)"
+          pi_version="$(version_of pi)"
+          codex_version="$(version_of codex)"
+          copilot_version="$(version_of copilot)"
+          gemini_version="$(version_of gemini)"
 
           {
             echo "## Coding Agent Base Image"
