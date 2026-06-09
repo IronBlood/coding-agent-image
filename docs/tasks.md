@@ -55,3 +55,10 @@
 - [ ] Decide how update checks or automatic updates for the newly installed CLIs should be handled in a centrally built shared base image.
 - [x] Document the runtime configuration mounts for `~/.codex`, `~/.copilot`, and `~/.gemini` in `README.md`.
 - [+] Update the CI workflow to verify the new agents after the shared base and user-facing images are built.
+
+### Release Publishing
+
+- [x] Tag each shared base image build with both `latest` and a UTC `YYYYMMDDHHmm` timestamp tag.
+- [x] Push both the moving `latest` tag and the timestamped image tag to GHCR.
+- [x] Generate release notes from the timestamped image with versions for Claude Code, Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI.
+- [x] Publish a GitHub Release named `base-YYYYMMDDHHmm` that links to the timestamped image tag and lists the included agent versions.

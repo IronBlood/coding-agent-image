@@ -38,3 +38,5 @@
 [20260526 00:00:00] Documented Codex, Copilot, and Gemini runtime mounts and invocation examples after a successful local user-facing image build.
 [20260526 00:00:00] Updated the Codex runtime example to disable its nested bubblewrap sandbox when Docker supplies the isolation boundary.
 [20260526 00:00:00] Documented forwarding terminal capability environment variables after confirming Codex terminal styling works without additional terminfo packages.
+[20260609 21:44:00] Updated manual-build workflow to publish latest and timestamped GHCR tags, summarize agent versions, and create a release for each base image build.
+[20260609 21:46:00] Removed the unused BASE_IMAGE workflow environment variable after splitting explicit latest and timestamped image references.
