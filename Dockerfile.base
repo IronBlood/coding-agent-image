@@ -1,5 +1,7 @@
 FROM node:24-trixie-slim
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
 # The user-facing image reuses host UID/GID values, commonly 1000:1000.
 RUN userdel --remove node
 
@@ -11,10 +13,20 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     gawk \
     ripgrep \
     fd-find \
+    python3 \
+    python3-venv \
+    python-is-python3 \
     ca-certificates \
     curl \
   && ln -s /usr/bin/fdfind /usr/local/bin/fd \
   && rm -rf /var/lib/apt/lists/*
+
+RUN command -v python \
+  && python --version \
+  && command -v uv \
+  && uv --version \
+  && command -v uvx \
+  && uvx --version
 
 RUN curl -fsSL https://claude.ai/install.sh | bash
 

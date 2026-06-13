@@ -1,6 +1,6 @@
 # Coding Agent Image
 
-This repository provides a two-image setup for running terminal coding agents, including Claude Code, Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI, in a container while keeping file ownership aligned with the host user.
+This repository provides a two-image setup for running terminal coding agents, including Claude Code, Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI, in a container while keeping file ownership aligned with the host user. It also includes Python and `uv` for isolated Python utility workflows that use the same mount and user-mapping model.
 
 ## Why use this?
 
@@ -16,6 +16,7 @@ The shared base image is built from [Dockerfile.base](./Dockerfile.base). It:
 
 - uses `node:24-trixie-slim`, providing the Node.js runtime needed by npm-installed agents
 - installs `bash`, `git`, `sed`, `awk`, `ripgrep`, `ca-certificates`, and `curl`
+- installs Python and `uv` for isolated Python workflows
 - installs Claude Code with the official installer
 - installs Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI globally through npm
 - copies the real Claude binary into a global location
@@ -211,6 +212,28 @@ docker run --rm -it \
   -v $WORKING_DIR:$WORKING_DIR \
   -v /path/to/.gemini:/home/$USERNAME/.gemini \
   coding-agent-image:local gemini
+```
+
+## Run Python Or uv
+
+Python and `uv` are included as general utilities. They are not coding agents, but they can reuse the same isolated workspace mount and host-matching user setup.
+
+```bash
+export WORKING_DIR=/path/to/working/dir
+
+docker run --rm -it \
+  -w $WORKING_DIR \
+  -v $WORKING_DIR:$WORKING_DIR \
+  coding-agent-image:local python --version
+```
+
+```bash
+export WORKING_DIR=/path/to/working/dir
+
+docker run --rm -it \
+  -w $WORKING_DIR \
+  -v $WORKING_DIR:$WORKING_DIR \
+  coding-agent-image:local uv run python --version
 ```
 
 ## Notes

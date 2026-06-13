@@ -42,3 +42,4 @@
 [20260609 21:46:00] Removed the unused BASE_IMAGE workflow environment variable after splitting explicit latest and timestamped image references.
 [20260609 22:05:00] Captured agent versions from both stdout and stderr and normalized release-note versions to one line.
 [20260609 22:18:00] Added Debian fd-find to the shared base image and exposed it as fd for Pi runtime use.
+[20260613 10:42:00] Added Python and uv utilities to the shared base image, CI validation, release notes, goals, tasks, and README usage examples.

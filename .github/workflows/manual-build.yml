@@ -62,6 +62,12 @@ jobs:
           docker run --rm "$BASE_IMAGE_VERSIONED" copilot --version
           docker run --rm "$BASE_IMAGE_VERSIONED" which gemini
           docker run --rm "$BASE_IMAGE_VERSIONED" gemini --version
+          docker run --rm "$BASE_IMAGE_VERSIONED" which python
+          docker run --rm "$BASE_IMAGE_VERSIONED" python --version
+          docker run --rm "$BASE_IMAGE_VERSIONED" which uv
+          docker run --rm "$BASE_IMAGE_VERSIONED" uv --version
+          docker run --rm "$BASE_IMAGE_VERSIONED" which uvx
+          docker run --rm "$BASE_IMAGE_VERSIONED" uvx --version
 
       - name: Generate release notes
         run: |
@@ -75,6 +81,8 @@ jobs:
           codex_version="$(version_of codex)"
           copilot_version="$(version_of copilot)"
           gemini_version="$(version_of gemini)"
+          python_version="$(version_of python)"
+          uv_version="$(version_of uv)"
 
           {
             echo "## Coding Agent Base Image"
@@ -91,6 +99,13 @@ jobs:
             echo "| Codex CLI | \`$codex_version\` |"
             echo "| GitHub Copilot CLI | \`$copilot_version\` |"
             echo "| Gemini CLI | \`$gemini_version\` |"
+            echo
+            echo "## Included Utilities"
+            echo
+            echo "| Utility | Version |"
+            echo "| --- | --- |"
+            echo "| Python | \`$python_version\` |"
+            echo "| uv | \`$uv_version\` |"
           } > release-notes.md
 
           cat release-notes.md >> "$GITHUB_STEP_SUMMARY"
@@ -116,6 +131,12 @@ jobs:
           docker run --rm "$RUNTIME_IMAGE" copilot --version
           docker run --rm "$RUNTIME_IMAGE" which gemini
           docker run --rm "$RUNTIME_IMAGE" gemini --version
+          docker run --rm "$RUNTIME_IMAGE" which python
+          docker run --rm "$RUNTIME_IMAGE" python --version
+          docker run --rm "$RUNTIME_IMAGE" which uv
+          docker run --rm "$RUNTIME_IMAGE" uv --version
+          docker run --rm "$RUNTIME_IMAGE" which uvx
+          docker run --rm "$RUNTIME_IMAGE" uvx --version
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0

@@ -16,6 +16,9 @@
 - [x] Initially use `debian:bookworm-slim` as the base image for the shared Claude image (superseded by the multi-agent base-image switch below).
 - [x] Install the Debian runtime utilities required by version 1: `bash`, `git`, `sed`, `awk`, `ripgrep`, and `fd`.
 - [x] Install Debian's `fd-find` package and expose it as `fd` through a compatibility symlink for agents that invoke `fd` directly.
+- [x] Install Debian Python packages `python3`, `python3-venv`, and `python-is-python3`.
+- [x] Install `uv` and `uvx` by copying the official binaries from `ghcr.io/astral-sh/uv`.
+- [x] Verify `python`, `uv`, and `uvx` during the shared base-image build.
 - [x] Install Claude Code with the official setup method during image build.
 - [x] Make the installed `claude` binary available on a global `PATH` instead of leaving it only under `$HOME/.local/bin`.
 - [x] Verify the Claude Code installation during image build with `which claude` and `claude --version`.
@@ -63,3 +66,4 @@
 - [x] Push both the moving `latest` tag and the timestamped image tag to GHCR.
 - [x] Generate release notes from the timestamped image with versions for Claude Code, Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI.
 - [x] Publish a GitHub Release named `base-YYYYMMDDHHmm` that links to the timestamped image tag and lists the included agent versions.
+- [x] Include Python and `uv` versions in release notes.
