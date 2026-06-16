@@ -1,6 +1,6 @@
 # Coding Agent Image
 
-This repository provides a two-image setup for running terminal coding agents, including Claude Code, Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI, in a container while keeping file ownership aligned with the host user. It also includes Python, `uv`, and the Rust toolchain for isolated utility workflows that use the same mount and user-mapping model.
+This repository provides a two-image setup for running terminal coding agents, including Claude Code, Pi, Codex CLI, and Gemini CLI, in a container while keeping file ownership aligned with the host user. It also includes Python, `uv`, and the Rust toolchain for isolated utility workflows that use the same mount and user-mapping model.
 
 ## Why use this?
 
@@ -18,9 +18,9 @@ The shared base image is built from [Dockerfile.base](./Dockerfile.base). It:
 - installs `bash`, `git`, `sed`, `awk`, `ripgrep`, `ca-certificates`, and `curl`
 - installs Python, `uv`, and the Rust toolchain for isolated utility workflows
 - installs Claude Code with the official installer
-- installs Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI globally through npm
+- installs Pi, Codex CLI, and Gemini CLI globally through npm
 - copies the real Claude binary into a global location
-- exposes `claude`, `pi`, `codex`, `copilot`, and `gemini` on `PATH`
+- exposes `claude`, `pi`, `codex`, and `gemini` on `PATH`
 - disables Claude auto-updates through a wrapper
 
 This image is intended to be built in CI and published to GHCR.
@@ -178,24 +178,6 @@ docker run --rm -it \
   coding-agent-image:local codex --sandbox danger-full-access
 ```
 
-## Run GitHub Copilot CLI
-
-GitHub Copilot CLI stores user settings, credentials, permissions, and sessions under `~/.copilot`. Mount that directory to preserve state between container runs.
-
-```bash
-export WORKING_DIR=/path/to/working/dir
-export USERNAME=$(id -un)
-
-docker run --rm -it \
-  -e TERM \
-  -e COLORTERM \
-  -e TERM_PROGRAM \
-  -w $WORKING_DIR \
-  -v $WORKING_DIR:$WORKING_DIR \
-  -v /path/to/.copilot:/home/$USERNAME/.copilot \
-  coding-agent-image:local copilot
-```
-
 ## Run Gemini CLI
 
 Gemini CLI stores user settings and user-level state under `~/.gemini`. Mount that directory to preserve state between container runs.
@@ -260,7 +242,7 @@ docker run --rm -it \
 
 ## Notes
 
-- **Persistent config**: mount only the state needed by the agent you run: `~/.claude` and `~/.claude.json` for Claude Code, `~/.pi` for Pi, `~/.codex` for Codex, `~/.copilot` for Copilot, or `~/.gemini` for Gemini.
+- **Persistent config**: mount only the state needed by the agent you run: `~/.claude` and `~/.claude.json` for Claude Code, `~/.pi` for Pi, `~/.codex` for Codex, or `~/.gemini` for Gemini.
 - **Terminal styling**: forward `TERM`, `COLORTERM`, and `TERM_PROGRAM` so interactive agents can use the terminal capabilities and color support detected on the host.
 - **Working directory**: mount the workspace at the same absolute path inside the container as it uses on the host. This keeps path references consistent between the host and the container.
 - **Updates**: Claude auto-updates are disabled in the shared base image. To update installed agents, pull or rebuild the shared base image and then rebuild the user-facing image.

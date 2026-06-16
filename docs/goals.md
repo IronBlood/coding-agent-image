@@ -2,7 +2,7 @@
 
 This project builds a docker image to run terminal coding agents in an isolated environment with the same user id and group id of the current user from the host system, so that ownership of newly created files and folders still belongs to the current user.
 
-The first supported agent was Claude Code. The shared base image has been expanded to support Pi, and the next iteration should add Codex CLI, GitHub Copilot CLI, and Gemini CLI. OpenCode is intentionally out of scope until there is a concrete use case for it. The image should stay minimal and only include agents and utilities needed for supported workflows. At minimum, it shall contain the Claude Code CLI, Pi CLI, Codex CLI, GitHub Copilot CLI, Gemini CLI, and explicitly install the runtime utilities `bash`, `git`, `sed`, `awk`, `ripgrep`, `fd`, Python, `uv`, and the Rust toolchain.
+The first supported agent was Claude Code. The shared base image has been expanded to support Pi, Codex CLI, and Gemini CLI. GitHub Copilot CLI and OpenCode are intentionally out of scope until there is a concrete use case for them because they add significant image size or are not currently used. The image should stay minimal and only include agents and utilities needed for supported workflows. At minimum, it shall contain the Claude Code CLI, Pi CLI, Codex CLI, Gemini CLI, and explicitly install the runtime utilities `bash`, `git`, `sed`, `awk`, `ripgrep`, `fd`, Python, `uv`, and the Rust toolchain.
 
 These utilities are part of the runtime contract and should be installed explicitly rather than assumed to be present in the base image. Debian packages `fd` as `fd-find` and exposes the binary as `fdfind`, so the image should provide a compatibility symlink at `/usr/local/bin/fd` for agents that invoke `fd` directly. Python, `uv`, and Rust are general-purpose utilities rather than coding agents; they are included so the same isolated bind-mount and host-user mapping flow can run Python and Rust commands and projects.
 
@@ -28,15 +28,14 @@ npm install -g --ignore-scripts --no-fund --no-audit --loglevel=error --progress
 
 The Claude Code installer and Pi npm installation have been confirmed to run in a non-interactive image build environment, with both resulting executables available to the user-facing image.
 
-Codex CLI, GitHub Copilot CLI, and Gemini CLI provide npm installation paths compatible with the selected Node.js base image. They should be added with their official package names:
+Codex CLI and Gemini CLI provide npm installation paths compatible with the selected Node.js base image. They should be added with their official package names:
 
 ```bash
 npm install -g @openai/codex
-npm install -g @github/copilot
 npm install -g @google/gemini-cli
 ```
 
-These three installations are intended additions and still require image-build and runtime validation. GitHub Copilot CLI must not be installed with `--ignore-scripts`, because its documented npm installation requires install scripts to remain enabled.
+The npm install layers should clean the npm cache before the layer completes so package-manager cache does not remain in the runtime image.
 
 If the Claude Code setup path does not work reliably in the image build, an acceptable fallback is to install Claude Code with npm instead, since the selected base image already provides Node.js and npm.
 
@@ -56,19 +55,19 @@ The project working directory shall be bind-mounted into the container at the sa
 
 The user-facing image should create a real in-container user account and a matching home directory such as `/home/$USERNAME`, and it should run agent commands as that user by default.
 
-Agent configuration paths inside the container should follow that created user's home directory. For Claude Code, both `~/.claude` and `~/.claude.json` shall be made available at their expected locations under that home path. For Pi, `~/.pi` shall be mountable under the same home path; Pi currently stores its default global configuration under `~/.pi/agent` and also supports overriding that directory with `PI_CODING_AGENT_DIR`. For Codex CLI, `~/.codex` shall be mountable to preserve configuration, credentials, and session state, with `CODEX_HOME` available if an alternate state directory is later needed. For GitHub Copilot CLI, `~/.copilot` shall be mountable to preserve settings, credentials, saved permissions, and sessions, with `COPILOT_HOME` available for an alternate location. For Gemini CLI, `~/.gemini` shall be mountable to preserve user settings and user-level state.
+Agent configuration paths inside the container should follow that created user's home directory. For Claude Code, both `~/.claude` and `~/.claude.json` shall be made available at their expected locations under that home path. For Pi, `~/.pi` shall be mountable under the same home path; Pi currently stores its default global configuration under `~/.pi/agent` and also supports overriding that directory with `PI_CODING_AGENT_DIR`. For Codex CLI, `~/.codex` shall be mountable to preserve configuration, credentials, and session state, with `CODEX_HOME` available if an alternate state directory is later needed. For Gemini CLI, `~/.gemini` shall be mountable to preserve user settings and user-level state.
 
 In this project, “isolated environment” means coding agents should only be able to access files that are intentionally exposed to the container through bind mounts. The purpose is to reduce the impact of malicious or unsafe commands by limiting the visible filesystem scope to the specific project directory and required agent configuration paths, rather than exposing broad host locations such as the full home directory or the host root filesystem.
 
-The required host paths and environment variables depend on the selected agent and backend. Claude Code workflows may use `~/.claude`, `~/.claude.json`, `ANTHROPIC_BASE_URL`, and `ANTHROPIC_AUTH_TOKEN`. Pi workflows may mount `~/.pi` to persist its `~/.pi/agent` configuration and sessions, together with any provider credentials required by the selected Pi provider. Codex, Copilot, and Gemini workflows may mount `~/.codex`, `~/.copilot`, and `~/.gemini` respectively, together with the authentication or provider environment variables selected by each user.
+The required host paths and environment variables depend on the selected agent and backend. Claude Code workflows may use `~/.claude`, `~/.claude.json`, `ANTHROPIC_BASE_URL`, and `ANTHROPIC_AUTH_TOKEN`. Pi workflows may mount `~/.pi` to persist its `~/.pi/agent` configuration and sessions, together with any provider credentials required by the selected Pi provider. Codex and Gemini workflows may mount `~/.codex` and `~/.gemini` respectively, together with the authentication or provider environment variables selected by each user.
 
-Because more than one agent or utility is available, the user-facing image should not start a single fixed command by default. Users shall invoke the intended binary, such as `claude`, `pi`, `codex`, `copilot`, `gemini`, `python`, `uv`, `rustc`, or `cargo`, when running the image.
+Because more than one agent or utility is available, the user-facing image should not start a single fixed command by default. Users shall invoke the intended binary, such as `claude`, `pi`, `codex`, `gemini`, `python`, `uv`, `rustc`, or `cargo`, when running the image.
 
 The runtime example below shows a Claude Code workflow. Other supported agents, such as Pi, may require different configuration mounts or provider environment variables.
 
 The user-facing image should define its in-container user and home path internally from build arguments. Users do not need to pass `HOME` as a runtime environment variable for version 1.
 
-The purpose of that home path is to provide stable locations for agent configuration and user-local launcher paths, including `~/.claude`, `~/.claude.json`, `~/.pi`, `~/.codex`, `~/.copilot`, `~/.gemini`, and `~/.local/bin/claude`.
+The purpose of that home path is to provide stable locations for agent configuration and user-local launcher paths, including `~/.claude`, `~/.claude.json`, `~/.pi`, `~/.codex`, `~/.gemini`, and `~/.local/bin/claude`.
 
 When a user runs this image, the following files or folders shall be mapped into the container. Consider the following commands as dummy code:
 
@@ -105,7 +104,7 @@ docker run --rm -it \
   coding-agent-image:local pi
 ```
 
-For Codex CLI, GitHub Copilot CLI, or Gemini CLI, mount only the selected agent's user-state directory and invoke that agent:
+For Codex CLI or Gemini CLI, mount only the selected agent's user-state directory and invoke that agent:
 
 ```bash
 docker run --rm -it \
@@ -113,12 +112,6 @@ docker run --rm -it \
   -v $WORKING_DIR:$WORKING_DIR \
   -v /path/to/.codex:/home/$USERNAME/.codex \
   coding-agent-image:local codex
-
-docker run --rm -it \
-  -w $WORKING_DIR \
-  -v $WORKING_DIR:$WORKING_DIR \
-  -v /path/to/.copilot:/home/$USERNAME/.copilot \
-  coding-agent-image:local copilot
 
 docker run --rm -it \
   -w $WORKING_DIR \

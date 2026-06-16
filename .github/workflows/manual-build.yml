@@ -58,8 +58,6 @@ jobs:
           docker run --rm "$BASE_IMAGE_VERSIONED" pi --version
           docker run --rm "$BASE_IMAGE_VERSIONED" which codex
           docker run --rm "$BASE_IMAGE_VERSIONED" codex --version
-          docker run --rm "$BASE_IMAGE_VERSIONED" which copilot
-          docker run --rm "$BASE_IMAGE_VERSIONED" copilot --version
           docker run --rm "$BASE_IMAGE_VERSIONED" which gemini
           docker run --rm "$BASE_IMAGE_VERSIONED" gemini --version
           docker run --rm "$BASE_IMAGE_VERSIONED" which python
@@ -83,7 +81,6 @@ jobs:
           claude_version="$(version_of claude)"
           pi_version="$(version_of pi)"
           codex_version="$(version_of codex)"
-          copilot_version="$(version_of copilot)"
           gemini_version="$(version_of gemini)"
           python_version="$(version_of python)"
           uv_version="$(version_of uv)"
@@ -103,7 +100,6 @@ jobs:
             echo "| Claude Code | \`$claude_version\` |"
             echo "| Pi | \`$pi_version\` |"
             echo "| Codex CLI | \`$codex_version\` |"
-            echo "| GitHub Copilot CLI | \`$copilot_version\` |"
             echo "| Gemini CLI | \`$gemini_version\` |"
             echo
             echo "## Included Utilities"
@@ -135,8 +131,6 @@ jobs:
           docker run --rm "$RUNTIME_IMAGE" pi --version
           docker run --rm "$RUNTIME_IMAGE" which codex
           docker run --rm "$RUNTIME_IMAGE" codex --version
-          docker run --rm "$RUNTIME_IMAGE" which copilot
-          docker run --rm "$RUNTIME_IMAGE" copilot --version
           docker run --rm "$RUNTIME_IMAGE" which gemini
           docker run --rm "$RUNTIME_IMAGE" gemini --version
           docker run --rm "$RUNTIME_IMAGE" which python

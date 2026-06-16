@@ -44,3 +44,4 @@
 [20260609 22:18:00] Added Debian fd-find to the shared base image and exposed it as fd for Pi runtime use.
 [20260613 10:42:00] Added Python and uv utilities to the shared base image, CI validation, release notes, goals, tasks, and README usage examples.
 [20260616 15:10:00] Added the minimal stable Rust toolchain to the shared base image, CI validation, release notes, goals, tasks, and README usage examples.
+[20260616 15:35:00] Removed GitHub Copilot CLI from the default image and cleaned npm caches in install layers to reduce image size.

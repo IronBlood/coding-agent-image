@@ -54,19 +54,19 @@
 ### Additional Npm Agents
 
 - [+] Install Codex CLI globally with the official npm package `@openai/codex`.
-- [+] Install GitHub Copilot CLI globally with the official npm package `@github/copilot`, without suppressing its installation scripts.
+- [x] Remove GitHub Copilot CLI from the default image to reduce image size.
 - [+] Install Gemini CLI globally with the official npm package `@google/gemini-cli`.
-- [+] Verify that `codex`, `copilot`, and `gemini` are available on a global `PATH` and can report their versions during the shared base-image build.
-- [+] Confirm that the three new CLIs remain executable from the non-root user-facing image.
+- [+] Verify that `codex` and `gemini` are available on a global `PATH` and can report their versions during the shared base-image build.
+- [+] Confirm that Codex CLI and Gemini CLI remain executable from the non-root user-facing image.
 - [ ] Decide how update checks or automatic updates for the newly installed CLIs should be handled in a centrally built shared base image.
-- [x] Document the runtime configuration mounts for `~/.codex`, `~/.copilot`, and `~/.gemini` in `README.md`.
+- [x] Document the runtime configuration mounts for `~/.codex` and `~/.gemini` in `README.md`.
 - [+] Update the CI workflow to verify the new agents after the shared base and user-facing images are built.
 
 ### Release Publishing
 
 - [x] Tag each shared base image build with both `latest` and a UTC `YYYYMMDDHHmm` timestamp tag.
 - [x] Push both the moving `latest` tag and the timestamped image tag to GHCR.
-- [x] Generate release notes from the timestamped image with versions for Claude Code, Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI.
+- [x] Generate release notes from the timestamped image with versions for Claude Code, Pi, Codex CLI, and Gemini CLI.
 - [x] Publish a GitHub Release named `base-YYYYMMDDHHmm` that links to the timestamped image tag and lists the included agent versions.
 - [x] Include Python and `uv` versions in release notes.
 - [x] Include `rustc` and `cargo` versions in release notes.
