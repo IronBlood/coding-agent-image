@@ -68,6 +68,10 @@ jobs:
           docker run --rm "$BASE_IMAGE_VERSIONED" uv --version
           docker run --rm "$BASE_IMAGE_VERSIONED" which uvx
           docker run --rm "$BASE_IMAGE_VERSIONED" uvx --version
+          docker run --rm "$BASE_IMAGE_VERSIONED" which rustc
+          docker run --rm "$BASE_IMAGE_VERSIONED" rustc --version
+          docker run --rm "$BASE_IMAGE_VERSIONED" which cargo
+          docker run --rm "$BASE_IMAGE_VERSIONED" cargo --version
 
       - name: Generate release notes
         run: |
@@ -83,6 +87,8 @@ jobs:
           gemini_version="$(version_of gemini)"
           python_version="$(version_of python)"
           uv_version="$(version_of uv)"
+          rustc_version="$(version_of rustc)"
+          cargo_version="$(version_of cargo)"
 
           {
             echo "## Coding Agent Base Image"
@@ -106,6 +112,8 @@ jobs:
             echo "| --- | --- |"
             echo "| Python | \`$python_version\` |"
             echo "| uv | \`$uv_version\` |"
+            echo "| rustc | \`$rustc_version\` |"
+            echo "| cargo | \`$cargo_version\` |"
           } > release-notes.md
 
           cat release-notes.md >> "$GITHUB_STEP_SUMMARY"
@@ -137,6 +145,10 @@ jobs:
           docker run --rm "$RUNTIME_IMAGE" uv --version
           docker run --rm "$RUNTIME_IMAGE" which uvx
           docker run --rm "$RUNTIME_IMAGE" uvx --version
+          docker run --rm "$RUNTIME_IMAGE" which rustc
+          docker run --rm "$RUNTIME_IMAGE" rustc --version
+          docker run --rm "$RUNTIME_IMAGE" which cargo
+          docker run --rm "$RUNTIME_IMAGE" cargo --version
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0

@@ -2,6 +2,9 @@ FROM node:24-trixie-slim
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
+ENV RUSTUP_HOME=/usr/local/rustup
+ENV PATH=/usr/local/cargo/bin:${PATH}
+
 # The user-facing image reuses host UID/GID values, commonly 1000:1000.
 RUN userdel --remove node
 
@@ -20,6 +23,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     curl \
   && ln -s /usr/bin/fdfind /usr/local/bin/fd \
   && rm -rf /var/lib/apt/lists/*
+
+RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs \
+    | CARGO_HOME=/usr/local/cargo sh -s -- -y --profile minimal --default-toolchain stable \
+  && chmod -R a+rX /usr/local/cargo /usr/local/rustup \
+  && rustc --version \
+  && cargo --version
 
 RUN command -v python \
   && python --version \

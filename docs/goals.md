@@ -2,15 +2,17 @@
 
 This project builds a docker image to run terminal coding agents in an isolated environment with the same user id and group id of the current user from the host system, so that ownership of newly created files and folders still belongs to the current user.
 
-The first supported agent was Claude Code. The shared base image has been expanded to support Pi, and the next iteration should add Codex CLI, GitHub Copilot CLI, and Gemini CLI. OpenCode is intentionally out of scope until there is a concrete use case for it. The image should stay minimal and only include agents and utilities needed for supported workflows. At minimum, it shall contain the Claude Code CLI, Pi CLI, Codex CLI, GitHub Copilot CLI, Gemini CLI, and explicitly install the runtime utilities `bash`, `git`, `sed`, `awk`, `ripgrep`, `fd`, Python, and `uv`.
+The first supported agent was Claude Code. The shared base image has been expanded to support Pi, and the next iteration should add Codex CLI, GitHub Copilot CLI, and Gemini CLI. OpenCode is intentionally out of scope until there is a concrete use case for it. The image should stay minimal and only include agents and utilities needed for supported workflows. At minimum, it shall contain the Claude Code CLI, Pi CLI, Codex CLI, GitHub Copilot CLI, Gemini CLI, and explicitly install the runtime utilities `bash`, `git`, `sed`, `awk`, `ripgrep`, `fd`, Python, `uv`, and the Rust toolchain.
 
-These utilities are part of the runtime contract and should be installed explicitly rather than assumed to be present in the base image. Debian packages `fd` as `fd-find` and exposes the binary as `fdfind`, so the image should provide a compatibility symlink at `/usr/local/bin/fd` for agents that invoke `fd` directly. Python and `uv` are general-purpose utilities rather than coding agents; they are included so the same isolated bind-mount and host-user mapping flow can run Python commands and projects.
+These utilities are part of the runtime contract and should be installed explicitly rather than assumed to be present in the base image. Debian packages `fd` as `fd-find` and exposes the binary as `fdfind`, so the image should provide a compatibility symlink at `/usr/local/bin/fd` for agents that invoke `fd` directly. Python, `uv`, and Rust are general-purpose utilities rather than coding agents; they are included so the same isolated bind-mount and host-user mapping flow can run Python and Rust commands and projects.
 
 Python should be installed from Debian packages, including `python3`, `python3-venv`, and `python-is-python3` so both `python3` and `python` are available. `uv` should be installed with the official Docker-supported binary copy method:
 
 ```Dockerfile
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 ```
+
+Rust should be installed through the official `rustup` bootstrap script with the minimal stable toolchain. The shared toolchain should live under `/usr/local/rustup` and be readable by the runtime user, while per-user Cargo caches should default to the created user's home directory.
 
 The preferred implementation is to use `node:24-trixie-slim` as the shared base image. This keeps a Debian-based image while providing the Node.js and npm runtime required by Pi. Claude Code is installed with its official setup method:
 
@@ -60,7 +62,7 @@ In this project, “isolated environment” means coding agents should only be a
 
 The required host paths and environment variables depend on the selected agent and backend. Claude Code workflows may use `~/.claude`, `~/.claude.json`, `ANTHROPIC_BASE_URL`, and `ANTHROPIC_AUTH_TOKEN`. Pi workflows may mount `~/.pi` to persist its `~/.pi/agent` configuration and sessions, together with any provider credentials required by the selected Pi provider. Codex, Copilot, and Gemini workflows may mount `~/.codex`, `~/.copilot`, and `~/.gemini` respectively, together with the authentication or provider environment variables selected by each user.
 
-Because more than one agent or utility is available, the user-facing image should not start a single fixed command by default. Users shall invoke the intended binary, such as `claude`, `pi`, `codex`, `copilot`, `gemini`, `python`, or `uv`, when running the image.
+Because more than one agent or utility is available, the user-facing image should not start a single fixed command by default. Users shall invoke the intended binary, such as `claude`, `pi`, `codex`, `copilot`, `gemini`, `python`, `uv`, `rustc`, or `cargo`, when running the image.
 
 The runtime example below shows a Claude Code workflow. Other supported agents, such as Pi, may require different configuration mounts or provider environment variables.
 

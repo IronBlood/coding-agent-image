@@ -19,6 +19,8 @@
 - [x] Install Debian Python packages `python3`, `python3-venv`, and `python-is-python3`.
 - [x] Install `uv` and `uvx` by copying the official binaries from `ghcr.io/astral-sh/uv`.
 - [x] Verify `python`, `uv`, and `uvx` during the shared base-image build.
+- [x] Install the minimal stable Rust toolchain with `rustup`.
+- [x] Verify `rustc` and `cargo` during the shared base-image build.
 - [x] Install Claude Code with the official setup method during image build.
 - [x] Make the installed `claude` binary available on a global `PATH` instead of leaving it only under `$HOME/.local/bin`.
 - [x] Verify the Claude Code installation during image build with `which claude` and `claude --version`.
@@ -67,3 +69,4 @@
 - [x] Generate release notes from the timestamped image with versions for Claude Code, Pi, Codex CLI, GitHub Copilot CLI, and Gemini CLI.
 - [x] Publish a GitHub Release named `base-YYYYMMDDHHmm` that links to the timestamped image tag and lists the included agent versions.
 - [x] Include Python and `uv` versions in release notes.
+- [x] Include `rustc` and `cargo` versions in release notes.
