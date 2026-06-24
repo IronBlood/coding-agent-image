@@ -2,7 +2,7 @@
 
 This project builds a docker image to run terminal coding agents in an isolated environment with the same user id and group id of the current user from the host system, so that ownership of newly created files and folders still belongs to the current user.
 
-The first supported agent was Claude Code. The shared base image has been expanded to support Pi, Codex CLI, and Gemini CLI. GitHub Copilot CLI and OpenCode are intentionally out of scope until there is a concrete use case for them because they add significant image size or are not currently used. The image should stay minimal and only include agents and utilities needed for supported workflows. At minimum, it shall contain the Claude Code CLI, Pi CLI, Codex CLI, Gemini CLI, and explicitly install the runtime utilities `bash`, `git`, `sed`, `awk`, `ripgrep`, `fd`, `build-essential`, Python, `uv`, and the Rust toolchain.
+The first supported agent was Claude Code. The shared base image has been expanded to support Pi, Codex CLI, and Gemini CLI. GitHub Copilot CLI and OpenCode are intentionally out of scope until there is a concrete use case for them because they add significant image size or are not currently used. The image should stay minimal and only include agents and utilities needed for supported workflows. At minimum, it shall contain the Claude Code CLI, Pi CLI, Codex CLI, Gemini CLI, and explicitly install the runtime utilities `bash`, `git`, `sed`, `awk`, `ripgrep`, `fd`, `build-essential`, `libpcre2-dev`, Python, `uv`, and the Rust toolchain.
 
 These utilities are part of the runtime contract and should be installed explicitly rather than assumed to be present in the base image. Debian packages `fd` as `fd-find` and exposes the binary as `fdfind`, so the image should provide a compatibility symlink at `/usr/local/bin/fd` for agents that invoke `fd` directly. Python, `uv`, and Rust are general-purpose utilities rather than coding agents; they are included so the same isolated bind-mount and host-user mapping flow can run Python and Rust commands and projects.
 
@@ -12,7 +12,7 @@ Python should be installed from Debian packages, including `python3`, `python3-v
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 ```
 
-Rust should be installed through the official `rustup` bootstrap script with the minimal stable toolchain. The shared toolchain should live under `/usr/local/rustup` and be readable by the runtime user, while per-user Cargo caches should default to the created user's home directory. Debian `build-essential` should be installed as part of the runtime utility set so Rust projects have a linker and common native build tools available.
+Rust should be installed through the official `rustup` bootstrap script with the minimal stable toolchain. The shared toolchain should live under `/usr/local/rustup` and be readable by the runtime user, while per-user Cargo caches should default to the created user's home directory. Debian `build-essential` should be installed as part of the runtime utility set so Rust projects have a linker and common native build tools available. Debian `libpcre2-dev` should be installed for workflows that need PCRE2 headers and libraries for native builds.
 
 The preferred implementation is to use `node:24-trixie-slim` as the shared base image. This keeps a Debian-based image while providing the Node.js and npm runtime required by Pi. Claude Code is installed with its official setup method:
 

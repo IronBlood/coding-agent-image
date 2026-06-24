@@ -46,3 +46,4 @@
 [20260616 15:10:00] Added the minimal stable Rust toolchain to the shared base image, CI validation, release notes, goals, tasks, and README usage examples.
 [20260616 15:35:00] Removed GitHub Copilot CLI from the default image and cleaned npm caches in install layers to reduce image size.
 [20260616 15:48:00] Added build-essential to provide linker and native build tools for Rust and other compiled workflows.
+[20260624 14:38:00] Added libpcre2-dev to the shared base image for native PCRE2 build workflows.
