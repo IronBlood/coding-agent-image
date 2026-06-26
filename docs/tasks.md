@@ -14,7 +14,7 @@
 ### Shared Base Image
 
 - [x] Initially use `debian:bookworm-slim` as the base image for the shared Claude image (superseded by the multi-agent base-image switch below).
-- [x] Install the Debian runtime utilities required by version 1: `bash`, `git`, `sed`, `awk`, `ripgrep`, `fd`, `build-essential`, and `libpcre2-dev`.
+- [x] Install the Debian runtime utilities required by version 1: `bash`, `git`, `sed`, `awk`, `ripgrep`, `fd`, `time`, `build-essential`, and `libpcre2-dev`.
 - [x] Install Debian's `fd-find` package and expose it as `fd` through a compatibility symlink for agents that invoke `fd` directly.
 - [x] Install Debian Python packages `python3`, `python3-venv`, and `python-is-python3`.
 - [x] Install `uv` and `uvx` by copying the official binaries from `ghcr.io/astral-sh/uv`.

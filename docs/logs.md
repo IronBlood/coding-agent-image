@@ -47,3 +47,4 @@
 [20260616 15:35:00] Removed GitHub Copilot CLI from the default image and cleaned npm caches in install layers to reduce image size.
 [20260616 15:48:00] Added build-essential to provide linker and native build tools for Rust and other compiled workflows.
 [20260624 14:38:00] Added libpcre2-dev to the shared base image for native PCRE2 build workflows.
+[20260626 16:45:00] Synced documentation after adding the Debian time package to the shared base image.

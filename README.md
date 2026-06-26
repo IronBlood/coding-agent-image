@@ -15,7 +15,7 @@ Docker alone is not enough, because the default `root` runtime often causes file
 The shared base image is built from [Dockerfile.base](./Dockerfile.base). It:
 
 - uses `node:24-trixie-slim`, providing the Node.js runtime needed by npm-installed agents
-- installs `bash`, `git`, `sed`, `awk`, `ripgrep`, `build-essential`, `ca-certificates`, and `curl`
+- installs `bash`, `git`, `sed`, `awk`, `ripgrep`, `time`, `build-essential`, `ca-certificates`, and `curl`
 - installs Python, `uv`, and the Rust toolchain for isolated utility workflows
 - installs Claude Code with the official installer
 - installs Pi, Codex CLI, and Gemini CLI globally through npm
