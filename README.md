@@ -25,6 +25,8 @@ The shared base image is built from [Dockerfile.base](./Dockerfile.base). It:
 
 This image is intended to be built in CI and published to GHCR.
 
+The manual build workflow publishes the shared base image as a multi-architecture image for `linux/amd64` and `linux/arm64`. Each architecture is built on a native GitHub-hosted runner, then combined into the timestamped and `latest` multi-arch tags.
+
 ### User-facing image
 
 The user-facing image is built from [Dockerfile](./Dockerfile). It:
@@ -42,6 +44,8 @@ If you want to use the shared base image directly, you can pull the published im
 ```bash
 docker pull ghcr.io/ironblood/coding-agent-image-base:latest
 ```
+
+Docker resolves the correct architecture automatically from the multi-arch manifest. Timestamped image tags are also published for reproducibility, and each release records the included agent and utility versions for both `linux/amd64` and `linux/arm64`.
 
 If you want to build it locally instead, or if an agent version shipped in the CI-built image is outdated:
 

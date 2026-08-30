@@ -45,6 +45,10 @@ This project is delivered as two images represented by two Dockerfiles. One shar
 
 The shared base image is intended to be buildable in CI and may be published to a container registry such as GHCR. The user-specific image may then use that published base image to avoid rerunning the Claude installer during local development unless the shared base contents change.
 
+The CI workflow should publish the shared base image for both `linux/amd64` and `linux/arm64`. The preferred implementation is to build each platform on a native GitHub-hosted runner, using `ubuntu-24.04` for amd64 and `ubuntu-24.04-arm` for arm64, instead of relying on QEMU emulation. Each platform build should push an architecture-specific timestamped image tag, such as `YYYYMMDDHHmm-amd64` or `YYYYMMDDHHmm-arm64`; a final publish job should create multi-architecture manifests for the timestamped tag and `latest` tag.
+
+Release notes should list the versioned multi-architecture image tag, the moving `latest` tag, the architecture-specific image tags, and the validated component versions for each platform.
+
 This repository tracks both the shared base-image Dockerfile and the reusable user-facing Dockerfile.
 
 To reflect support for multiple agents, the shared base image should be published as `coding-agent-image-base`, and the locally built user-facing image should use the name `coding-agent-image`.

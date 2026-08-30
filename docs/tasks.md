@@ -72,3 +72,7 @@
 - [x] Publish a GitHub Release named `base-YYYYMMDDHHmm` that links to the timestamped image tag and lists the included agent versions.
 - [x] Include Python and `uv` versions in release notes.
 - [x] Include `rustc` and `cargo` versions in release notes.
+- [x] Build shared base images for `linux/amd64` and `linux/arm64` on native GitHub-hosted runners.
+- [x] Push architecture-specific timestamp tags for amd64 and arm64.
+- [x] Publish multi-architecture manifests for the timestamped tag and the moving `latest` tag.
+- [x] Include per-platform component versions in release notes.

@@ -8,27 +8,57 @@ permissions:
   packages: write
 
 jobs:
-  build-base-and-runtime:
-    runs-on: ubuntu-latest
+  prepare:
+    runs-on: ubuntu-24.04
+
+    outputs:
+      base_image: ${{ steps.metadata.outputs.base_image }}
+      base_image_latest: ${{ steps.metadata.outputs.base_image_latest }}
+      base_image_versioned: ${{ steps.metadata.outputs.base_image_versioned }}
+      image_tag: ${{ steps.metadata.outputs.image_tag }}
+      release_tag: ${{ steps.metadata.outputs.release_tag }}
+
+    steps:
+      - name: Derive image names
+        id: metadata
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          image_tag="$(date -u +%Y%m%d%H%M)"
+          base_image="ghcr.io/${owner}/coding-agent-image-base"
+
+          echo "base_image=${base_image}" >> "$GITHUB_OUTPUT"
+          echo "base_image_latest=${base_image}:latest" >> "$GITHUB_OUTPUT"
+          echo "base_image_versioned=${base_image}:${image_tag}" >> "$GITHUB_OUTPUT"
+          echo "image_tag=${image_tag}" >> "$GITHUB_OUTPUT"
+          echo "release_tag=base-${image_tag}" >> "$GITHUB_OUTPUT"
+
+  build-base:
+    needs: prepare
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+            suffix: amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            suffix: arm64
+
+    runs-on: ${{ matrix.runner }}
 
     env:
+      BASE_IMAGE_ARCH: ${{ needs.prepare.outputs.base_image }}:${{ needs.prepare.outputs.image_tag }}-${{ matrix.suffix }}
+      PLATFORM: ${{ matrix.platform }}
       USERNAME: claude
       UID: 1000
       GID: 1000
-      RUNTIME_IMAGE: coding-agent-image:ci
+      RUNTIME_IMAGE: coding-agent-image:ci-${{ matrix.suffix }}
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
-
-      - name: Derive image names
-        run: |
-          owner="${GITHUB_REPOSITORY_OWNER,,}"
-          image_tag="$(date -u +%Y%m%d%H%M)"
-          echo "IMAGE_TAG=${image_tag}" >> "$GITHUB_ENV"
-          echo "BASE_IMAGE_LATEST=ghcr.io/${owner}/coding-agent-image-base:latest" >> "$GITHUB_ENV"
-          echo "BASE_IMAGE_VERSIONED=ghcr.io/${owner}/coding-agent-image-base:${image_tag}" >> "$GITHUB_ENV"
-          echo "RELEASE_TAG=base-${image_tag}" >> "$GITHUB_ENV"
 
       - name: Log in to GHCR
         uses: docker/login-action@v4
@@ -40,41 +70,39 @@ jobs:
       - name: Build shared base image
         run: |
           docker build \
+            --platform "$PLATFORM" \
             -f Dockerfile.base \
-            -t "$BASE_IMAGE_LATEST" \
-            -t "$BASE_IMAGE_VERSIONED" \
+            -t "$BASE_IMAGE_ARCH" \
             .
 
       - name: Push shared base image
-        run: |
-          docker push "$BASE_IMAGE_LATEST"
-          docker push "$BASE_IMAGE_VERSIONED"
+        run: docker push "$BASE_IMAGE_ARCH"
 
-      - name: Check agents in shared base image
+      - name: Check agents and utilities in shared base image
         run: |
-          docker run --rm "$BASE_IMAGE_VERSIONED" which claude
-          docker run --rm "$BASE_IMAGE_VERSIONED" claude --version
-          docker run --rm "$BASE_IMAGE_VERSIONED" which pi
-          docker run --rm "$BASE_IMAGE_VERSIONED" pi --version
-          docker run --rm "$BASE_IMAGE_VERSIONED" which codex
-          docker run --rm "$BASE_IMAGE_VERSIONED" codex --version
-          docker run --rm "$BASE_IMAGE_VERSIONED" which gemini
-          docker run --rm "$BASE_IMAGE_VERSIONED" gemini --version
-          docker run --rm "$BASE_IMAGE_VERSIONED" which python
-          docker run --rm "$BASE_IMAGE_VERSIONED" python --version
-          docker run --rm "$BASE_IMAGE_VERSIONED" which uv
-          docker run --rm "$BASE_IMAGE_VERSIONED" uv --version
-          docker run --rm "$BASE_IMAGE_VERSIONED" which uvx
-          docker run --rm "$BASE_IMAGE_VERSIONED" uvx --version
-          docker run --rm "$BASE_IMAGE_VERSIONED" which rustc
-          docker run --rm "$BASE_IMAGE_VERSIONED" rustc --version
-          docker run --rm "$BASE_IMAGE_VERSIONED" which cargo
-          docker run --rm "$BASE_IMAGE_VERSIONED" cargo --version
+          docker run --rm "$BASE_IMAGE_ARCH" which claude
+          docker run --rm "$BASE_IMAGE_ARCH" claude --version
+          docker run --rm "$BASE_IMAGE_ARCH" which pi
+          docker run --rm "$BASE_IMAGE_ARCH" pi --version
+          docker run --rm "$BASE_IMAGE_ARCH" which codex
+          docker run --rm "$BASE_IMAGE_ARCH" codex --version
+          docker run --rm "$BASE_IMAGE_ARCH" which gemini
+          docker run --rm "$BASE_IMAGE_ARCH" gemini --version
+          docker run --rm "$BASE_IMAGE_ARCH" which python
+          docker run --rm "$BASE_IMAGE_ARCH" python --version
+          docker run --rm "$BASE_IMAGE_ARCH" which uv
+          docker run --rm "$BASE_IMAGE_ARCH" uv --version
+          docker run --rm "$BASE_IMAGE_ARCH" which uvx
+          docker run --rm "$BASE_IMAGE_ARCH" uvx --version
+          docker run --rm "$BASE_IMAGE_ARCH" which rustc
+          docker run --rm "$BASE_IMAGE_ARCH" rustc --version
+          docker run --rm "$BASE_IMAGE_ARCH" which cargo
+          docker run --rm "$BASE_IMAGE_ARCH" cargo --version
 
-      - name: Generate release notes
+      - name: Generate platform release notes
         run: |
           version_of() {
-            docker run --rm "$BASE_IMAGE_VERSIONED" "$@" --version 2>&1 \
+            docker run --rm "$BASE_IMAGE_ARCH" "$@" --version 2>&1 \
               | sed -n '1p'
           }
 
@@ -88,42 +116,41 @@ jobs:
           cargo_version="$(version_of cargo)"
 
           {
-            echo "## Coding Agent Base Image"
+            echo "### $PLATFORM"
             echo
-            echo "- Versioned image: \`$BASE_IMAGE_VERSIONED\`"
-            echo "- Moving latest image: \`$BASE_IMAGE_LATEST\`"
+            echo "- Image: \`$BASE_IMAGE_ARCH\`"
             echo
-            echo "## Included Agents"
-            echo
-            echo "| Agent | Version |"
+            echo "| Component | Version |"
             echo "| --- | --- |"
             echo "| Claude Code | \`$claude_version\` |"
             echo "| Pi | \`$pi_version\` |"
             echo "| Codex CLI | \`$codex_version\` |"
             echo "| Gemini CLI | \`$gemini_version\` |"
-            echo
-            echo "## Included Utilities"
-            echo
-            echo "| Utility | Version |"
-            echo "| --- | --- |"
             echo "| Python | \`$python_version\` |"
             echo "| uv | \`$uv_version\` |"
             echo "| rustc | \`$rustc_version\` |"
             echo "| cargo | \`$cargo_version\` |"
-          } > release-notes.md
+          } > "release-notes-${{ matrix.suffix }}.md"
 
-          cat release-notes.md >> "$GITHUB_STEP_SUMMARY"
+          cat "release-notes-${{ matrix.suffix }}.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload platform release notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes-${{ matrix.suffix }}
+          path: release-notes-${{ matrix.suffix }}.md
 
       - name: Build user-facing image
         run: |
           docker build \
-            --build-arg BASE_IMAGE="$BASE_IMAGE_VERSIONED" \
+            --platform "$PLATFORM" \
+            --build-arg BASE_IMAGE="$BASE_IMAGE_ARCH" \
             --build-arg USERNAME="$USERNAME" \
             --build-arg UID="$UID" \
             --build-arg GID="$GID" \
             -t "$RUNTIME_IMAGE" .
 
-      - name: Check agents as configured non-root user
+      - name: Check agents and utilities as configured non-root user
         run: |
           docker run --rm "$RUNTIME_IMAGE" which claude
           docker run --rm "$RUNTIME_IMAGE" claude --version
@@ -143,6 +170,72 @@ jobs:
           docker run --rm "$RUNTIME_IMAGE" rustc --version
           docker run --rm "$RUNTIME_IMAGE" which cargo
           docker run --rm "$RUNTIME_IMAGE" cargo --version
+
+  publish:
+    needs:
+      - prepare
+      - build-base
+
+    runs-on: ubuntu-24.04
+
+    env:
+      BASE_IMAGE: ${{ needs.prepare.outputs.base_image }}
+      BASE_IMAGE_LATEST: ${{ needs.prepare.outputs.base_image_latest }}
+      BASE_IMAGE_VERSIONED: ${{ needs.prepare.outputs.base_image_versioned }}
+      IMAGE_TAG: ${{ needs.prepare.outputs.image_tag }}
+      RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish multi-arch manifests
+        run: |
+          docker buildx imagetools create \
+            -t "$BASE_IMAGE_VERSIONED" \
+            "$BASE_IMAGE:${IMAGE_TAG}-amd64" \
+            "$BASE_IMAGE:${IMAGE_TAG}-arm64"
+
+          docker buildx imagetools create \
+            -t "$BASE_IMAGE_LATEST" \
+            "$BASE_IMAGE:${IMAGE_TAG}-amd64" \
+            "$BASE_IMAGE:${IMAGE_TAG}-arm64"
+
+      - name: Download platform release notes
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-notes-*
+          path: release-notes
+          merge-multiple: true
+
+      - name: Generate release notes
+        run: |
+          {
+            echo "## Coding Agent Base Image"
+            echo
+            echo "- Versioned image: \`$BASE_IMAGE_VERSIONED\`"
+            echo "- Moving latest image: \`$BASE_IMAGE_LATEST\`"
+            echo
+            echo "## Platform Images"
+            echo
+            echo "| Platform | Image |"
+            echo "| --- | --- |"
+            echo "| linux/amd64 | \`$BASE_IMAGE:${IMAGE_TAG}-amd64\` |"
+            echo "| linux/arm64 | \`$BASE_IMAGE:${IMAGE_TAG}-arm64\` |"
+            echo
+            echo "## Included Versions"
+            echo
+            cat release-notes/*.md
+          } > release-notes.md
+
+          cat release-notes.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0

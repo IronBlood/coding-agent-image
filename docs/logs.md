@@ -48,3 +48,4 @@
 [20260616 15:48:00] Added build-essential to provide linker and native build tools for Rust and other compiled workflows.
 [20260624 14:38:00] Added libpcre2-dev to the shared base image for native PCRE2 build workflows.
 [20260626 16:45:00] Synced documentation after adding the Debian time package to the shared base image.
+[20260830 12:18:00] Documented the native amd64 and arm64 CI build flow, architecture-specific tags, multi-arch manifests, and per-platform release notes.
