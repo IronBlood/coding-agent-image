@@ -49,3 +49,4 @@
 [20260624 14:38:00] Added libpcre2-dev to the shared base image for native PCRE2 build workflows.
 [20260626 16:45:00] Synced documentation after adding the Debian time package to the shared base image.
 [20260830 12:18:00] Documented the native amd64 and arm64 CI build flow, architecture-specific tags, multi-arch manifests, and per-platform release notes.
+[20260921 21:27:43] Added python3-dev so Python packages with native extensions can compile against CPython headers.

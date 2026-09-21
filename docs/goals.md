@@ -6,7 +6,7 @@ The first supported agent was Claude Code. The shared base image has been expand
 
 These utilities are part of the runtime contract and should be installed explicitly rather than assumed to be present in the base image. Debian packages `fd` as `fd-find` and exposes the binary as `fdfind`, so the image should provide a compatibility symlink at `/usr/local/bin/fd` for agents that invoke `fd` directly. Python, `uv`, and Rust are general-purpose utilities rather than coding agents; they are included so the same isolated bind-mount and host-user mapping flow can run Python and Rust commands and projects.
 
-Python should be installed from Debian packages, including `python3`, `python3-venv`, and `python-is-python3` so both `python3` and `python` are available. `uv` should be installed with the official Docker-supported binary copy method:
+Python should be installed from Debian packages, including `python3`, `python3-dev`, `python3-venv`, and `python-is-python3` so both `python3` and `python` are available and native Python extensions can be compiled against the CPython headers. `uv` should be installed with the official Docker-supported binary copy method:
 
 ```Dockerfile
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
