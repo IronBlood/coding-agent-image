@@ -62,6 +62,7 @@ RUN npm install -g \
     --loglevel=error \
     --progress=false \
     @earendil-works/pi-coding-agent \
+  && pi install npm:pi-subagents \
   && npm cache clean --force \
   && rm -rf /root/.npm \
   && command -v pi \
